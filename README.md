@@ -43,6 +43,27 @@ Existing parental-control tools mostly block sites or dump raw logs on parents. 
    - **Ask Nightlight:** a chat assistant that answers a parent's questions about the report, citing the evidence.
    - Print or save as PDF.
 
+## Does it work? We measured it
+
+We ran Nightlight and two baselines on the labelled demo dataset: three weeks for a fictional 14-year-old, with 24 planted signals, 2 normal controls, 165 harmless items and 5 patterns that only exist across conversations. The answer key ([`eval/answer-key.ts`](eval/answer-key.ts)) was written from the dataset's design before any model ran, and wasn't changed afterwards. Nightlight ran 3 times.
+
+| | OpenAI Moderation API | Nightlight's rubric, one chat at a time | **Nightlight** |
+|---|---|---|---|
+| Planted signals caught | 4 / 24 | 23 / 24 | **23 / 24** |
+| Patterns across conversations | 0 / 5 | 0 / 5 | **5 / 5** |
+| False alarms on 165 harmless items | 3 | 0 | **0** |
+| Normal things left alone | 2 / 2 | 1 / 2 | **2 / 2** |
+
+- **The child-development lens is what catches the signals.** Moderation built for adults caught 4 of 24. Its only false alarms were three homework pages about *To Kill a Mockingbird*, flagged as "violence".
+- **Reading conversations together is what finds the patterns.** All 5 were found (mood drifting down over late-night chats, growing reliance on AI, grooming stages across a search and a chat, secrecy across sources, and body image across sources). No per-chat view can see them.
+- **The AI-reply audit:** 6 of 6 replies graded correctly in every run. **Consistency:** 94% of verdicts were identical across the 3 runs. **Cost:** about 46 s and $0.23 per full analysis.
+- **What it missed:**
+  - One search, "how to delete discord messages", was never flagged.
+  - Both self-harm signals (a search and a chat) were flagged "talk soon" rather than "urgent" in all 3 runs. Only one run's final report raised a separate urgent self-harm concern. The overall status was still "check in today" every time, because of other urgent signals, but this is a calibration miss against our own rubric.
+  - The secrecy pattern was found in 2 of 3 runs.
+
+The interactive breakdown is the **`/evaluation`** page in the app (a signal-by-signal matrix, plus a pattern explorer comparing "each chat alone" with "read together"). The full write-up is [`docs/evaluation.md`](docs/evaluation.md). To reproduce: `npm run eval`. This is a small, author-labelled test on synthetic data, not a clinical validation.
+
 ## The Child Safety Lens
 
 Nightlight's rubric is the single source of truth for prompts, UI and methodology ([`lib/rubric.ts`](lib/rubric.ts)). It's organised by the **4Cs of online risk** (content, contact, conduct, contract, plus cross-cutting health and privacy risks) from Livingstone & Stoilova's CO:RE framework. Each dimension carries indicators, **age-band notes** (6–9, 10–12, 13–15, 16–17), and a note on *why general moderation misses it*.
@@ -74,7 +95,7 @@ Nightlight's rubric is the single source of truth for prompts, UI and methodolog
 
 | Stays on your device | Sent for analysis | Stored |
 |---|---|---|
-| The raw history file and chat exports · full URLs and query strings · all personal details (redacted to `[ADDRESS]`, `[SCHOOL]`, …) | Deduped page titles, domains, paths and search terms · redacted chat text | **No child data.** The API routes are stateless, with no database and no logs of content. The report lives in your browser tab's session storage. The one thing kept is anonymous usage counters for the public demo (a salted hash of the IP plus an estimated spend), which expire within two days; see [Protecting the public demo](#protecting-the-public-demo). |
+| The raw history file and chat exports · full URLs and query strings · all personal details (redacted to `[ADDRESS]`, `[SCHOOL]`, …) | Deduped page titles, domains, paths and search terms · redacted chat text | **No child data.** The API routes are stateless, with no database and no logs of content. The report lives in your browser tab's session storage. The one thing kept is anonymous usage counters for the public demo (a salted hash of the IP plus an estimated spend), which expire within two days; see [`lib/guard.ts`](lib/guard.ts). |
 
 - **No external favicon or analytics requests.** These would leak the domains your child visits.
 - **Prompt-injection defence.** Page titles and chat messages are untrusted text. They're passed to the model inside tagged data blocks, with instructions to never follow anything written inside them.
