@@ -1,0 +1,24 @@
+{
+  "chrome": {
+    "visits": 1439,
+    "uniqueUrls": 423,
+    "firstTs": 1790060300521,
+    "lastTs": 1791844223195
+  },
+  "takeout": {
+    "visits": 1439
+  },
+  "firefox": {
+    "visits": 60,
+    "firstUrl": "https://open.spotify.com/genre/pop-page",
+    "firstTs": 1790060300521
+  },
+  "safari": {
+    "visits": 40,
+    "firstUrl": "https://open.spotify.com/genre/pop-page",
+    "firstTs": 1790060300521
+  },
+  "chatgpt": {
+    "conversations": 15
+  }
+}
