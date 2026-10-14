@@ -89,6 +89,11 @@ Nightlight's rubric is the single source of truth for prompts, UI and methodolog
 - O'Connell, R. (2003). *A Typology of Child Cybersexploitation and Online Grooming Practices.*
 - Common Sense Media (2025). *AI Risk Assessment: Social AI Companions.*
 
+Why understanding instead of surveillance (summarised on the Methodology page):
+- Ghosh, A. K. et al. (2018). *Safety vs. Surveillance: What Children Have to Say about Mobile Apps for Parental Control.* ACM CHI. https://doi.org/10.1145/3173574.3173698. Of 736 children's reviews, 76% gave one star.
+- Wisniewski, P. et al. (2017). *Parental Control vs. Teen Self-Regulation: Is there a middle ground for mobile online safety?* ACM CSCW. https://doi.org/10.1145/2998181.2998352
+- Livingstone, S. et al. (2017). *Maximizing Opportunities and Minimizing Risks for Children Online: The Role of Digital Skills in Emerging Strategies of Parental Mediation.* Journal of Communication. https://doi.org/10.1111/jcom.12277
+
 > Nightlight is a conversation aid, **not a diagnosis**. If you're worried about your child's immediate safety, contact local emergency services or a crisis line.
 
 ## Privacy by design

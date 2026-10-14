@@ -43,12 +43,59 @@ export const metadata: Metadata = {
 
 const NAV = [
   { id: "lens", label: "A child-development lens" },
+  { id: "not-surveillance", label: "Why not surveillance" },
   { id: "dimensions", label: "The 14 dimensions" },
   { id: "ai-replies", label: "Grading the AI’s replies" },
   { id: "severity", label: "Severity and status" },
   { id: "privacy", label: "Privacy by design" },
   { id: "limits", label: "Limitations and ethics" },
   { id: "sources", label: "Sources" },
+];
+
+/** Verified findings (checked against each paper's published abstract). */
+const EVIDENCE: { stat: string; statLabel: string; finding: React.ReactNode; source: keyof typeof SOURCES }[] = [
+  {
+    stat: "76%",
+    statLabel: "of 736 children’s reviews of parental-control apps gave one star",
+    finding: (
+      <>
+        Children aged 8–19 found the apps “overly restrictive and invasive of their personal privacy, negatively impacting
+        their relationships with their parents.”
+      </>
+    ),
+    source: "ghosh2018",
+  },
+  {
+    stat: "75",
+    statLabel: "teen online-safety apps analysed, feature by feature",
+    finding: (
+      <>
+        The apps “strongly favored features that promote parental control through monitoring and restricting teens’
+        online behaviors”. Few supported teens’ own self-regulation or communication between parents and teens.
+      </>
+    ),
+    source: "wisniewski2017",
+  },
+  {
+    stat: "6,400",
+    statLabel: "parents of 6–14-year-olds surveyed in 8 European countries",
+    finding: (
+      <>
+        Restrictive mediation meant “fewer online risks but at the cost of opportunities”. Enabling mediation, which
+        “responds to child agency”, went with more opportunities, and its greater risk exposure “may not support harm”.
+      </>
+    ),
+    source: "livingstone2017",
+  },
+];
+
+const DESIGN_RESPONSES: { title: string; body: string }[] = [
+  { title: "Patterns, not a raw log", body: "Parents see themes, trends and ranked concerns instead of reading every message." },
+  { title: "Evidence stays blurred", body: "The underlying search or message is only shown when the parent chooses to look." },
+  { title: "A conversation, not a block", body: "Every concern comes with a warm conversation starter. Nightlight never blocks or restricts anything." },
+  { title: "Normal is normal", body: "Healthy curiosity and privacy-seeking are marked developmentally normal, never counted as concerns." },
+  { title: "A review you choose, not live monitoring", body: "It analyses exports the parent provides, once, rather than watching in real time." },
+  { title: "Tell your child", body: "We encourage doing the export together and reviewing the results with them, to protect trust." },
 ];
 
 function SectionHeading({ id, eyebrow, title, children }: { id: string; eyebrow: string; title: string; children?: React.ReactNode }) {
@@ -160,6 +207,60 @@ export default function MethodologyPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </section>
+
+            {/* 1b. why understanding, not surveillance */}
+            <section aria-labelledby="not-surveillance-title">
+              <SectionHeading id="not-surveillance" eyebrow="The research behind the approach" title="Why understanding beats surveillance">
+                <p>
+                  Most parental-control tools monitor and restrict. Peer-reviewed research on children, parents and these
+                  apps points the other way: children experience them as invasive, they rarely help a child learn to handle
+                  risk themselves, and restriction cuts opportunities along with risks. Nightlight is designed around that
+                  evidence.
+                </p>
+              </SectionHeading>
+              <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+                {EVIDENCE.map((e) => (
+                  <figure key={e.source} className="nl-card flex flex-col p-6">
+                    <p className="text-display text-4xl tabular-nums">{e.stat}</p>
+                    <p className="mt-1 text-sm font-medium text-foreground/85">{e.statLabel}</p>
+                    <blockquote className="mt-4 border-l-2 border-primary/40 pl-3 text-sm leading-relaxed text-foreground/85">
+                      {e.finding}
+                    </blockquote>
+                    <figcaption className="mt-auto pt-5 text-xs leading-relaxed text-muted-foreground">
+                      <a
+                        href={SOURCES[e.source].url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-foreground/80 underline decoration-border underline-offset-4 hover:decoration-foreground"
+                      >
+                        {SOURCES[e.source].title}
+                      </a>
+                      <span className="block">
+                        {SOURCES[e.source].org}, {SOURCES[e.source].year}
+                      </span>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+              <div className="nl-card mt-6 p-6">
+                <h3 className="text-title text-lg">What this means for how Nightlight works</h3>
+                <ul className="mt-4 grid grid-cols-1 gap-x-8 gap-y-3 md:grid-cols-2">
+                  {DESIGN_RESPONSES.map((d) => (
+                    <li key={d.title} className="flex gap-2.5 text-sm leading-relaxed text-foreground/85">
+                      <Check className="mt-0.5 size-4 shrink-0 text-sev-normal-ink" />
+                      <span>
+                        <strong className="font-semibold text-foreground">{d.title}.</strong> {d.body}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
+                  The research is honest about trade-offs: restrictive mediation is linked to fewer online risks, and
+                  enabling mediation to more opportunities but also more risk exposure. That is why Nightlight still flags
+                  urgent signals clearly, and why it gives parents a way to talk rather than a switch to block.
+                </p>
               </div>
             </section>
 

@@ -26,7 +26,10 @@ export type SourceId =
   | "unicef2021"
   | "icoChildrensCode"
   | "oconnell2003"
-  | "commonSenseCompanions";
+  | "commonSenseCompanions"
+  | "ghosh2018"
+  | "wisniewski2017"
+  | "livingstone2017";
 
 export const SOURCES: Record<SourceId, { title: string; org: string; year: number; url: string }> = {
   core4cs: {
@@ -70,6 +73,24 @@ export const SOURCES: Record<SourceId, { title: string; org: string; year: numbe
     org: "Common Sense Media",
     year: 2025,
     url: "https://www.commonsensemedia.org/ai-ratings/social-ai-companions",
+  },
+  ghosh2018: {
+    title: "Safety vs. Surveillance: What Children Have to Say about Mobile Apps for Parental Control",
+    org: "Ghosh, Badillo-Urquiola, Guha, LaViola & Wisniewski, ACM CHI",
+    year: 2018,
+    url: "https://doi.org/10.1145/3173574.3173698",
+  },
+  wisniewski2017: {
+    title: "Parental Control vs. Teen Self-Regulation: Is there a middle ground for mobile online safety?",
+    org: "Wisniewski, Ghosh, Xu, Rosson & Carroll, ACM CSCW",
+    year: 2017,
+    url: "https://doi.org/10.1145/2998181.2998352",
+  },
+  livingstone2017: {
+    title: "Maximizing Opportunities and Minimizing Risks for Children Online: The Role of Digital Skills in Emerging Strategies of Parental Mediation",
+    org: "Livingstone, Ólafsson, Helsper, Lupiáñez-Villanueva, Veltri & Folkvord, Journal of Communication",
+    year: 2017,
+    url: "https://doi.org/10.1111/jcom.12277",
   },
 };
 
