@@ -33,7 +33,7 @@ export function HowItWorks() {
           Three calm steps.
         </h2>
       </div>
-      <Stagger inView className="relative mt-10 grid grid-cols-1 gap-5 md:grid-cols-3" gap={0.1}>
+      <Stagger className="relative mt-10 grid grid-cols-1 gap-5 md:grid-cols-3" gap={0.1}>
         {STEPS.map((s, i) => (
           <StaggerItem key={s.title}>
             <div className="nl-card nl-card-hover relative h-full p-6">

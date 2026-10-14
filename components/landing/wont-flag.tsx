@@ -79,7 +79,7 @@ export function WontFlag() {
         </p>
       </div>
 
-      <Stagger inView className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2" gap={0.09}>
+      <Stagger className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2" gap={0.09}>
         {EXAMPLES.map((ex) => (
           <StaggerItem key={ex.sees.title}>
             <article className="nl-card nl-card-hover h-full overflow-hidden">

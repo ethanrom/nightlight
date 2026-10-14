@@ -73,7 +73,7 @@ function MethodScoreRow({ label, value }: { label: string; value: string }) {
 export function MethodCards({ results }: { results: EvalResults }) {
   const { headline: h, runs } = results;
   return (
-    <Stagger inView className="grid grid-cols-1 gap-5 md:grid-cols-3">
+    <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-3">
       {METHOD_IDS.map((m) => {
         const meta = METHOD_META[m];
         const Icon = meta.icon;

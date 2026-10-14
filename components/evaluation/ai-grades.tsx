@@ -14,7 +14,7 @@ export function AiGrades({ results }: { results: EvalResults }) {
   }
 
   return (
-    <FadeUp inView>
+    <FadeUp>
       <div className="nl-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[44rem] border-collapse text-left">

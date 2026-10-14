@@ -93,7 +93,7 @@ function AlarmTile({ results }: { results: EvalResults }) {
       </div>
       <p className="mt-3.5 flex items-center gap-2 text-sm text-foreground/85">
         <SeverityDot severity="talk_soon" />
-        talk soon or urgent
+        <span className="tabular-nums">{fmtNum(nl.talkSoonOrUrgent)}</span> talk soon or urgent
       </p>
       <p className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
         <SeverityDot severity="worth_noticing" />

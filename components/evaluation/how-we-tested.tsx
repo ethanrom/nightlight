@@ -43,7 +43,7 @@ export function HowWeTested({ results }: { results: EvalResults }) {
   ];
 
   return (
-    <FadeUp inView className="space-y-5">
+    <FadeUp className="space-y-5">
       <div className="grid gap-5 lg:grid-cols-2">
         {/* dataset */}
         <div className="nl-card p-6">

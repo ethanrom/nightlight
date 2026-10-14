@@ -19,7 +19,7 @@ export function FalseAlarms({ results }: { results: EvalResults }) {
   const outOf = counts.nightlight.outOf;
 
   return (
-    <FadeUp inView className="space-y-5">
+    <FadeUp className="space-y-5">
       {/* the counts, per method */}
       <div className="nl-card overflow-hidden">
         <table className="w-full border-collapse text-left">

@@ -120,7 +120,7 @@ export default function EvaluationPage() {
                   answer for them is to leave them alone.
                 </p>
               </SectionHeading>
-              <FadeUp inView className="mt-8">
+              <FadeUp className="mt-8">
                 <DetectionMatrix results={results} />
               </FadeUp>
             </section>
@@ -133,7 +133,7 @@ export default function EvaluationPage() {
                   time order, how each chat looks on its own, and what each method made of it.
                 </p>
               </SectionHeading>
-              <FadeUp inView className="mt-8">
+              <FadeUp className="mt-8">
                 <PatternExplorer results={results} />
               </FadeUp>
             </section>
