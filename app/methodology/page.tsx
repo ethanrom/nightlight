@@ -362,7 +362,7 @@ export default function MethodologyPage() {
                     "No accounts, no database, no content analytics",
                     "The API routes relay a request and return the answer",
                     "“New analysis” or closing the tab clears the report",
-                    "Nothing is written to disk by Nightlight",
+                    "Only anonymous usage counters are kept to protect the public demo: a salted hash of the network address and an estimated spend, deleted within two days",
                   ]}
                 />
               </div>

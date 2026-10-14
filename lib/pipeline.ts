@@ -28,6 +28,9 @@ const CHAT_BATCH_MAX_CONVERSATIONS = 4;
 const CHAT_BATCH_MAX_CHARS = 40_000;
 const CONCURRENCY = 4;
 
+/** The public demo's usage limits were hit (or the live demo is paused); the message is safe to show to the user. */
+export class CapacityError extends Error {}
+
 class ApiCallError extends Error {
   constructor(
     public kind: LlmErrorKind,
@@ -51,7 +54,7 @@ async function postJson<T>(url: string, body: unknown, attempts = 2): Promise<T>
       const kind = data && !data.ok ? data.error.kind : "api";
       lastError = new ApiCallError(kind, data && !data.ok ? data.error.message : `HTTP ${res.status}`);
       // Refusals and bad requests won't change on retry.
-      if (kind === "refusal" || kind === "bad_request") break;
+      if (kind === "refusal" || kind === "bad_request" || kind === "rate_limited" || kind === "paused") break;
     } catch (err) {
       lastError = new ApiCallError("api", err instanceof Error ? err.message : String(err));
     }
@@ -253,6 +256,10 @@ export async function runPipeline(
     }
   }
 
+  // Nothing useful came back because the usage limits were hit: say so instead of showing an empty report.
+  const capacity = errors.find((e) => e.kind === "rate_limited" || e.kind === "paused");
+  if (capacity && !summary) throw new CapacityError(capacity.message);
+
   progress.stage = "done";
   emit();
 
@@ -339,7 +346,8 @@ export async function runDemo(onProgress: (p: PipelineProgress) => void): Promis
     return { ...report, demo: true };
   } catch (err) {
     console.warn("Live demo failed, loading cached report:", err);
-    return loadCachedDemo();
+    // Same sample data, recorded earlier. The store tells the user why they are seeing it.
+    return { ...(await loadCachedDemo()), cachedFallback: true };
   }
 }
 

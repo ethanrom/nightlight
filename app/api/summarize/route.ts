@@ -1,4 +1,5 @@
 // POST /api/summarize: cross-conversation trends, ranked concerns and conversation starters for the parent.
+import { guard, readJson } from "@/lib/guard";
 import { errorResponse, structured } from "@/lib/llm";
 import { bySeverityDesc, filterRefs, overallFromSeverities } from "@/lib/postprocess";
 import { severityRank, type Severity } from "@/lib/rubric";
@@ -13,13 +14,11 @@ function badRequest(message: string): Response {
 }
 
 export async function POST(req: Request): Promise<Response> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return badRequest("Request body must be JSON.");
-  }
-  const parsed = SummarizeRequestSchema.safeParse(body);
+  const g = await guard(req, "summarize");
+  if (!g.ok) return g.response;
+  const raw = await readJson(req, "summarize");
+  if (!raw.ok) return raw.response;
+  const parsed = SummarizeRequestSchema.safeParse(raw.body);
   if (!parsed.success) return badRequest(parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   const input = parsed.data;
 
@@ -38,6 +37,7 @@ export async function POST(req: Request): Promise<Response> {
       user: summarizeUser(shown),
       maxTokens: 8000,
       effort: "medium",
+      track: g.track,
     });
 
     // Severity of the evidence behind each ref, so a concern is never ranked below what it cites
@@ -103,5 +103,7 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ ok: true, result } satisfies ApiResult<Summary>);
   } catch (err) {
     return errorResponse(err);
+  } finally {
+    await g.settle();
   }
 }

@@ -1,4 +1,5 @@
 // POST /api/classify-history: triage a batch of (client-parsed) history items against the Child Safety Lens.
+import { guard, readJson } from "@/lib/guard";
 import { errorResponse, structured } from "@/lib/llm";
 import { reconcileSeverity } from "@/lib/postprocess";
 import { classifyHistorySystem, classifyHistoryUser } from "@/lib/prompts";
@@ -13,13 +14,11 @@ function badRequest(message: string): Response {
 }
 
 export async function POST(req: Request): Promise<Response> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return badRequest("Request body must be JSON.");
-  }
-  const parsed = ClassifyHistoryRequestSchema.safeParse(body);
+  const g = await guard(req, "classify");
+  if (!g.ok) return g.response;
+  const raw = await readJson(req, "classify");
+  if (!raw.ok) return raw.response;
+  const parsed = ClassifyHistoryRequestSchema.safeParse(raw.body);
   if (!parsed.success) return badRequest(parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   const { ageBand, items } = parsed.data;
 
@@ -35,6 +34,7 @@ export async function POST(req: Request): Promise<Response> {
       maxTokens: 8000,
       effort: "low",
       tier: "fast",
+      track: g.track,
     });
 
     // Drop flags for ids that aren't in this batch; keep one flag per (id, dimension), most severe wins.
@@ -65,5 +65,7 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ ok: true, result: { flags, domains } } satisfies ApiResult<ClassifyHistoryResult>);
   } catch (err) {
     return errorResponse(err);
+  } finally {
+    await g.settle();
   }
 }

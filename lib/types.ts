@@ -199,6 +199,8 @@ export interface Report {
   errors: PipelineError[];
   /** true when this is the bundled demo report */
   demo?: boolean;
+  /** true when "Try the demo" couldn't run live (limits, outage) and showed the recorded run instead */
+  cachedFallback?: boolean;
   /** `getTimezoneOffset()` of the browser that generated the report (used to re-anchor the cached demo) */
   tzOffsetMinutes?: number;
 }
@@ -207,7 +209,16 @@ export type { DietCategory };
 
 // ---------------------------------------------------------------- API contracts
 
-export type LlmErrorKind = "refusal" | "invalid_output" | "truncated" | "api" | "bad_request";
+export type LlmErrorKind =
+  | "refusal"
+  | "invalid_output"
+  | "truncated"
+  | "api"
+  | "bad_request"
+  /** the public demo's usage limits were hit (lib/guard.ts) */
+  | "rate_limited"
+  /** the live demo is switched off (LIVE_DEMO=off) */
+  | "paused";
 
 export type ApiResult<T> =
   | { ok: true; result: T }

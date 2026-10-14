@@ -31,7 +31,7 @@ export function SiteFooter() {
             <p className="eyebrow">Principles</p>
             <p className="text-muted-foreground">Understand, don’t surveil</p>
             <p className="text-muted-foreground">Parsed in your browser</p>
-            <p className="text-muted-foreground">Nothing stored</p>
+            <p className="text-muted-foreground">Your data isn’t stored</p>
           </div>
         </nav>
       </div>

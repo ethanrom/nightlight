@@ -74,7 +74,7 @@ Nightlight's rubric is the single source of truth for prompts, UI and methodolog
 
 | Stays on your device | Sent for analysis | Stored |
 |---|---|---|
-| The raw history file and chat exports · full URLs and query strings · all personal details (redacted to `[ADDRESS]`, `[SCHOOL]`, …) | Deduped page titles, domains, paths and search terms · redacted chat text | **Nothing.** The API routes are stateless, with no database and no logs of content. The report lives in your browser tab's session storage. |
+| The raw history file and chat exports · full URLs and query strings · all personal details (redacted to `[ADDRESS]`, `[SCHOOL]`, …) | Deduped page titles, domains, paths and search terms · redacted chat text | **No child data.** The API routes are stateless, with no database and no logs of content. The report lives in your browser tab's session storage. The one thing kept is anonymous usage counters for the public demo (a salted hash of the IP plus an estimated spend), which expire within two days; see [Protecting the public demo](#protecting-the-public-demo). |
 
 - **No external favicon or analytics requests.** These would leak the domains your child visits.
 - **Prompt-injection defence.** Page titles and chat messages are untrusted text. They're passed to the model inside tagged data blocks, with instructions to never follow anything written inside them.
@@ -125,20 +125,7 @@ Environment variables:
 | `CLAUDE_AWS_MODEL` | Bedrock model id or inference-profile ARN for the "smart" tier (Claude Sonnet 5.5) |
 | `CLAUDE_AWS_FAST_MODEL` | Optional "fast" tier (e.g. `global.anthropic.claude-haiku-5-5`); falls back to `CLAUDE_AWS_MODEL` |
 
-## Deploy to Vercel
 
-Nightlight is a stateless Next.js app (no database, no storage), so it deploys as-is.
-
-1. Push the repo to GitHub (private is fine) and import it at [vercel.com/new](https://vercel.com/new). The Next.js preset is detected automatically; leave the build settings alone.
-2. In **Settings → Environment Variables**, add the variables from the table above for Production (and Preview, if you use it). Paste the values **without quotes**.
-3. Deploy. Open the site and click **Try the demo**: it runs the whole pipeline live against Bedrock in about 45 seconds.
-
-Notes:
-- The AWS user behind `CLAUDE_AWS_ACCESS_KEY` needs `bedrock:InvokeModel` and `bedrock:InvokeModelWithResponseStream` on the inference profile(s) you configure.
-- The four API routes set `maxDuration = 60`, the Hobby-plan limit. The slowest call (the summary) takes about 30 seconds.
-- Nothing needs to be set at build time. The Bedrock client is created lazily on the first request.
-- `OPENAI_API_KEY` (used only by the local demo-video tooling) is not needed by the app and should not be added to Vercel.
-- If a live run ever fails (for example a Bedrock quota), the **Try the demo** flow falls back to a cached report (`public/samples/demo-report.json`), so the demo never shows an error screen.
 
 ## How to export the data
 

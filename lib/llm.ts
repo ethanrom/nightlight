@@ -2,6 +2,7 @@
 import { AnthropicBedrock } from "@anthropic-ai/bedrock-sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { z } from "zod";
+import { costUsd, type Usage } from "./pricing";
 import type { LlmErrorKind } from "./types";
 
 let client: AnthropicBedrock | null = null;
@@ -56,6 +57,27 @@ export interface StructuredOptions<T extends z.ZodType> {
   maxTokens?: number;
   effort?: "low" | "medium" | "high";
   tier?: ModelTier;
+  /** Called with the estimated USD cost of the call, for spend limits (see lib/guard.ts). */
+  track?: (usd: number) => void;
+}
+
+/** Logs one usage line per call (no content) and reports the estimated cost to the caller's tracker. */
+export function reportUsage(label: string, model: string, usage: Usage, track?: (usd: number) => void): number {
+  const usd = costUsd(model, usage);
+  console.log(
+    "[llm]",
+    JSON.stringify({
+      call: label,
+      model: /haiku/i.test(model) ? "haiku" : "sonnet",
+      in: usage.input_tokens,
+      out: usage.output_tokens,
+      cacheRead: usage.cache_read_input_tokens ?? 0,
+      cacheWrite: usage.cache_creation_input_tokens ?? 0,
+      usd: Number(usd.toFixed(5)),
+    }),
+  );
+  track?.(usd);
+  return usd;
 }
 
 /** One structured-output call. Throws LlmError on refusal, truncation or invalid output. */
@@ -66,6 +88,7 @@ export async function structured<T extends z.ZodType>({
   maxTokens = 16000,
   effort = "low",
   tier = "smart",
+  track,
 }: StructuredOptions<T>): Promise<z.infer<T>> {
   const model = getModel(tier);
   let res;
@@ -86,6 +109,8 @@ export async function structured<T extends z.ZodType>({
     if (/structured output/i.test(message)) throw new LlmError("invalid_output", message);
     throw new LlmError("api", message);
   }
+
+  reportUsage(tier, model, res.usage, track);
 
   if (res.stop_reason === "refusal") {
     throw new LlmError("refusal", "The model declined to analyse this batch.");

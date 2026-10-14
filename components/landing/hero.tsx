@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 const PRIVACY = [
   { icon: Laptop, text: "Parsed in your browser" },
   { icon: EyeOff, text: "Personal details redacted before analysis" },
-  { icon: ShieldCheck, text: "Nothing stored" },
+  { icon: ShieldCheck, text: "Your data isn’t stored" },
 ];
 
 export function Hero() {

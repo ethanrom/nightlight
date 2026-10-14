@@ -386,7 +386,7 @@ export function UploadSection() {
             )}
             <ul className="space-y-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-2">
-                <Lock className="size-3.5" /> Parsed in your browser, nothing stored
+                <Lock className="size-3.5" /> Parsed in your browser; your data isn’t stored
               </li>
               <li className="flex items-center gap-2">
                 <ScanEye className="size-3.5" /> Names, schools and addresses masked first

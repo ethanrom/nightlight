@@ -121,10 +121,10 @@ export type Summary = z.infer<typeof SummarySchema>;
 
 export const HistoryItemSchema = z.object({
   id: z.number().int(),
-  domain: z.string(),
-  path: z.string(),
-  title: z.string(),
-  search: z.string().optional(),
+  domain: z.string().max(120),
+  path: z.string().max(300),
+  title: z.string().max(400),
+  search: z.string().max(400).optional(),
   visits: z.number(),
   firstSeen: z.number(),
   lastSeen: z.number(),
@@ -134,27 +134,29 @@ export const HistoryItemSchema = z.object({
 export const PreparedMessageSchema = z.object({
   i: z.number().int(),
   role: z.enum(["child", "ai"]),
-  text: z.string(),
+  // lib/preprocess.ts caps messages at 2,000 characters; the extra room is for redaction placeholders
+  text: z.string().max(3000),
   ts: z.number().optional(),
 });
 
 export const PreparedConversationSchema = z.object({
-  id: z.string(),
-  platform: z.string(),
-  title: z.string(),
+  id: z.string().max(120),
+  platform: z.string().max(60),
+  title: z.string().max(300),
   startedAt: z.number().optional(),
-  messages: z.array(PreparedMessageSchema),
+  messages: z.array(PreparedMessageSchema).max(160),
   truncated: z.boolean(),
 });
 
+// Request limits keep any single call's cost bounded; the client batches far below them (lib/pipeline.ts).
 export const ClassifyHistoryRequestSchema = z.object({
   ageBand: AgeBandSchema,
-  items: z.array(HistoryItemSchema).max(250),
+  items: z.array(HistoryItemSchema).max(200),
 });
 
 export const AuditChatsRequestSchema = z.object({
   ageBand: AgeBandSchema,
-  conversations: z.array(PreparedConversationSchema).max(40),
+  conversations: z.array(PreparedConversationSchema).max(8),
 });
 
 // ---------- /api/summarize and /api/chat request bodies (added by the AI layer) ----------
@@ -190,9 +192,9 @@ export const SummarizeRequestSchema = z.object({
   childName: z.string().max(60).optional(),
   /** LocalStats; deliberately lenient (only read defensively for the prompt). */
   stats: z.record(z.string(), z.unknown()).default({}),
-  flaggedHistory: z.array(FlaggedHistoryItemSchema).max(3000),
-  audits: z.array(DatedChatAuditSchema).max(500),
-  pii: z.array(PiiHitSchema).max(2000).default([]),
+  flaggedHistory: z.array(FlaggedHistoryItemSchema).max(1000),
+  audits: z.array(DatedChatAuditSchema).max(100),
+  pii: z.array(PiiHitSchema).max(300).default([]),
   tzOffsetMinutes: TzOffsetSchema,
 });
 

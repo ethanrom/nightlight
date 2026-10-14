@@ -2,7 +2,8 @@
 // The answer may contain interactive cards as ```card fenced JSON blocks (see lib/chat-cards.ts); the client
 // validates and renders them. The stream stays plain text so it is trivial to consume and to cache.
 import type { MessageStreamEvent } from "@anthropic-ai/sdk/resources/messages";
-import { errorResponse, getClient, getModel, LlmError, thinkingFor } from "@/lib/llm";
+import { guard, readJson } from "@/lib/guard";
+import { errorResponse, getClient, getModel, LlmError, reportUsage, thinkingFor } from "@/lib/llm";
 import { openFenceLine } from "@/lib/chat-cards";
 import { CHAT_ERROR_NOTE, CHAT_REFUSAL_NOTE, chatSystem } from "@/lib/prompts";
 import { ChatRequestSchema } from "@/lib/schemas";
@@ -19,13 +20,11 @@ function badRequest(message: string): Response {
 }
 
 export async function POST(req: Request): Promise<Response> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return badRequest("Request body must be JSON.");
-  }
-  const parsed = ChatRequestSchema.safeParse(body);
+  const g = await guard(req, "chat");
+  if (!g.ok) return g.response;
+  const raw = await readJson(req, "chat");
+  if (!raw.ok) return raw.response;
+  const parsed = ChatRequestSchema.safeParse(raw.body);
   if (!parsed.success) return badRequest(parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   const { ageBand, childName, context, messages } = parsed.data;
 
@@ -105,12 +104,14 @@ export async function POST(req: Request): Promise<Response> {
           }
         }
         const final = await stream.finalMessage();
+        reportUsage("chat", model, final.usage, g.track);
         if (final.stop_reason === "refusal") pushNote(CHAT_REFUSAL_NOTE);
         else if (final.stop_reason === "max_tokens") pushNote("\n\n…");
       } catch (err) {
         console.error("[chat] stream failed:", err instanceof Error ? err.message : err);
         if (!req.signal.aborted) pushNote(CHAT_ERROR_NOTE);
       } finally {
+        await g.settle();
         try {
           controller.close();
         } catch {

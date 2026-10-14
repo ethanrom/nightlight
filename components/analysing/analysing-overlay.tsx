@@ -259,7 +259,7 @@ export function AnalysingOverlay() {
                   </h2>
                   <p className="mt-0.5 text-sm text-muted-foreground">
                     {analysis.status === "error"
-                      ? "Nothing was stored or sent anywhere unexpected."
+                      ? "Your data wasn’t stored or sent anywhere unexpected."
                       : "Parsed here in your browser first. Personal details are masked before anything is analysed."}
                   </p>
                 </div>
@@ -272,8 +272,9 @@ export function AnalysingOverlay() {
                     <div className="min-w-0">
                       <p className="text-sm font-medium">{analysis.message}</p>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        This can happen if a file is in an unexpected format, or the analysis service is busy. You can
-                        try again, or explore a ready-made demo report instead.
+                        {analysis.capacity
+                          ? "To keep this public demo free, live analysis has a daily limit. Nothing is wrong with your file. You can explore the ready-made sample report now, or try again tomorrow."
+                          : "This can happen if a file is in an unexpected format, or the analysis service is busy. You can try again, or explore a ready-made demo report instead."}
                       </p>
                       {analysis.detail && (
                         <p className="mt-2 rounded-md bg-background/60 px-2 py-1.5 font-mono text-[0.7rem] break-words text-muted-foreground">

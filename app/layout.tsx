@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s · Nightlight",
   },
   description:
-    "Nightlight reads the patterns in a child’s browsing and AI chats through a child-development lens, so you can start the right conversation. Parsed in your browser. Nothing stored.",
+    "Nightlight reads the patterns in a child’s browsing and AI chats through a child-development lens, so you can start the right conversation. Parsed in your browser. Your data isn’t stored.",
   applicationName: "Nightlight",
 };
 

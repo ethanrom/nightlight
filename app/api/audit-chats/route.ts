@@ -1,4 +1,5 @@
 // POST /api/audit-chats: audit conversations (child + AI) against the Child Safety Lens and grade the AI's replies.
+import { guard, readJson } from "@/lib/guard";
 import { errorResponse, structured } from "@/lib/llm";
 import { anchorExcerpt, reconcileSeverity } from "@/lib/postprocess";
 import { auditChatsSystem, auditChatsUser } from "@/lib/prompts";
@@ -14,13 +15,19 @@ function badRequest(message: string): Response {
   return Response.json({ ok: false, error: { kind: "bad_request", message } } satisfies ApiResult<never>, { status: 400 });
 }
 
-async function auditBatch(ageBand: AgeBand, conversations: PreparedConversation[], tz?: number): Promise<ChatAudit[]> {
+async function auditBatch(
+  ageBand: AgeBand,
+  conversations: PreparedConversation[],
+  tz: number | undefined,
+  track: (usd: number) => void,
+): Promise<ChatAudit[]> {
   const out = await structured({
     schema: AuditChatsResultSchema,
     system: auditChatsSystem(ageBand),
     user: auditChatsUser(conversations, tz),
     maxTokens: 16000,
     effort: "low",
+    track,
   });
   return out.audits;
 }
@@ -43,13 +50,11 @@ function cleanAudit(audit: ChatAudit, conv: PreparedConversation): ChatAudit {
 }
 
 export async function POST(req: Request): Promise<Response> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return badRequest("Request body must be JSON.");
-  }
-  const parsed = RequestSchema.safeParse(body);
+  const g = await guard(req, "audit");
+  if (!g.ok) return g.response;
+  const raw = await readJson(req, "audit");
+  if (!raw.ok) return raw.response;
+  const parsed = RequestSchema.safeParse(raw.body);
   if (!parsed.success) return badRequest(parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   const { ageBand, conversations, tzOffsetMinutes } = parsed.data;
 
@@ -68,14 +73,14 @@ export async function POST(req: Request): Promise<Response> {
       }
     };
 
-    take(await auditBatch(ageBand, conversations, tzOffsetMinutes));
+    take(await auditBatch(ageBand, conversations, tzOffsetMinutes, g.track));
 
     // The model occasionally skips one; retry once for just the missing conversations.
     const missing = conversations.filter((c) => !audits.has(c.id));
     if (missing.length) {
       console.warn(`[audit-chats] ${missing.length} conversation(s) missing from first pass; retrying`);
       try {
-        take(await auditBatch(ageBand, missing, tzOffsetMinutes));
+        take(await auditBatch(ageBand, missing, tzOffsetMinutes, g.track));
       } catch (err) {
         console.error("[audit-chats] retry failed:", err instanceof Error ? err.message : err);
       }
@@ -91,5 +96,7 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ ok: true, result } satisfies ApiResult<AuditChatsResult>);
   } catch (err) {
     return errorResponse(err);
+  } finally {
+    await g.settle();
   }
 }

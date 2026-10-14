@@ -10,7 +10,8 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { loadCachedDemo, runDemo, runPipeline } from "./pipeline";
+import { toast } from "sonner";
+import { CapacityError, loadCachedDemo, runDemo, runPipeline } from "./pipeline";
 import type { AgeBand } from "./rubric";
 import type { PipelineInput, PipelineProgress, Report } from "./types";
 
@@ -93,7 +94,7 @@ export type AnalysisState =
   | { status: "idle" }
   | { status: "running"; mode: AnalysisMode; progress: PipelineProgress }
   | { status: "done"; mode: AnalysisMode; progress: PipelineProgress }
-  | { status: "error"; mode: AnalysisMode; message: string; detail?: string };
+  | { status: "error"; mode: AnalysisMode; message: string; detail?: string; capacity?: boolean };
 
 export const INITIAL_PROGRESS: PipelineProgress = {
   stage: "parsing",
@@ -209,6 +210,12 @@ export function ReportProvider({ children }: { children: React.ReactNode }) {
     async (mode: AnalysisMode, report: Report, meta: InputMeta | null, id: number, last: PipelineProgress) => {
       if (id !== runId.current) return;
       commit({ report, meta });
+      if (report.cachedFallback) {
+        toast.info("Live analysis is busy right now", {
+          description: "This is the recorded run of the same sample data, so you can still explore the whole report.",
+          duration: 9000,
+        });
+      }
       setAnalysis({
         status: "done",
         mode,
@@ -258,8 +265,12 @@ export function ReportProvider({ children }: { children: React.ReactNode }) {
         setAnalysis({
           status: "error",
           mode,
-          message: "We couldn’t finish the analysis this time.",
+          message:
+            err instanceof CapacityError
+              ? "The live demo is at capacity right now."
+              : "We couldn’t finish the analysis this time.",
           detail,
+          capacity: err instanceof CapacityError,
         });
       }
     },

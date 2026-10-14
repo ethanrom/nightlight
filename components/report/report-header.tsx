@@ -85,7 +85,7 @@ export function ReportHeader({ tab, counts }: { tab: ReportTab; counts: Partial<
               className="hidden h-8 items-center gap-1.5 rounded-full bg-sev-normal-soft px-3 text-xs font-medium text-sev-normal-ink md:inline-flex print:hidden"
             >
               <Lock className="size-3.5" />
-              Nothing stored
+              Data not stored
             </TooltipTrigger>
             <TooltipContent className="max-w-64 flex-col items-start leading-relaxed">
               This report lives only in this browser tab. It is cleared when you start a new analysis or close the tab.
