@@ -5,6 +5,7 @@ import {
   BookOpen,
   Check,
   EyeOff,
+  FlaskConical,
   Heart,
   Laptop,
   Lightbulb,
@@ -81,6 +82,16 @@ export default function MethodologyPage() {
               across weeks of browsing and AI conversations. Here is the rubric, the evidence behind it, and where it can
               go wrong.
             </p>
+            <Link
+              href="/evaluation"
+              className="group mt-7 inline-flex items-center gap-2.5 rounded-full border border-border bg-card/80 py-2 pr-4 pl-2.5 text-sm font-medium shadow-soft transition-colors hover:border-primary/40"
+            >
+              <span className="grid size-7 place-items-center rounded-full bg-accent text-accent-foreground">
+                <FlaskConical className="size-3.5" />
+              </span>
+              We measured how well this works
+              <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+            </Link>
           </div>
         </section>
 

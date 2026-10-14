@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Lock, MessagesSquare, Plus, Printer, Sparkles, LayoutDashboard, ShieldAlert, Globe } from "lucide-react";
+import { BookOpen, FlaskConical, Lock, MessagesSquare, Plus, Printer, Sparkles, LayoutDashboard, ShieldAlert, Globe } from "lucide-react";
 import { motion } from "motion/react";
 import { LogoMark } from "@/components/brand/logo";
 import { useReport, type ReportTab } from "@/components/report/report-context";
@@ -145,13 +145,22 @@ export function ReportHeader({ tab, counts }: { tab: ReportTab; counts: Partial<
               );
             })}
           </TabsList>
-          <Link
-            href="/methodology"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "hidden shrink-0 gap-1.5 text-muted-foreground sm:inline-flex")}
-          >
-            <BookOpen className="size-3.5" />
-            Methodology
-          </Link>
+          <div className="hidden shrink-0 items-center gap-0.5 sm:flex">
+            <Link
+              href="/methodology"
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-1.5 text-muted-foreground")}
+            >
+              <BookOpen className="size-3.5" />
+              Methodology
+            </Link>
+            <Link
+              href="/evaluation"
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-1.5 text-muted-foreground")}
+            >
+              <FlaskConical className="size-3.5" />
+              Evaluation
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, FlaskConical } from "lucide-react";
 import { LogoMark, Wordmark } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -25,6 +25,16 @@ export function SiteHeader({ className }: { className?: string }) {
           >
             <BookOpen className="size-4" />
             Methodology
+          </Link>
+          <Link
+            href="/evaluation"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "h-9 gap-1.5 px-3 text-sm text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <FlaskConical className="size-4" />
+            Evaluation
           </Link>
           <ThemeToggle className="size-9" />
         </nav>

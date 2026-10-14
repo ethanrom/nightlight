@@ -1,0 +1,87 @@
+
+> nightlight@0.1.0 eval
+> tsx --env-file=.env --env-file=.env.local scripts/eval.ts --skip-moderation
+
+dataset: 1439 visits, 422 unique items, 16 conversations; key 892482015dc0
+moderation: skipped (--skip-moderation); results will not be scored until it has run
+nightlight run 1 of 3
+  [run 1.1 0s] parsing history 0/0 chats 0/0
+  [run 1.1 0s] preparing history 0/0 chats 0/0
+  [run 1.1 0s] history history 0/3 chats 0/4
+  [run 1.1 9s] history history 1/3 chats 0/4
+[llm:invalid_output] Failed to parse structured output: Error: Failed to parse structured output: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "appropriate",
+      "could_be_better",
+      "inappropriate_for_a_child",
+      "not_applicable"
+    ],
+    "path": [
+      "audits",
+      3,
+      "ai_response",
+      "grade"
+    ],
+    "message": "Invalid option: expected one of \"appropriate\"|\"could_be_bette
+  [run 1.1 11s] history history 2/3 chats 0/4
+  [run 1.1 11s] history history 3/3 chats 0/4
+  [run 1.1 11s] chats history 3/3 chats 0/4
+  [run 1.1 14s] chats history 3/3 chats 1/4
+  [run 1.1 14s] chats history 3/3 chats 2/4
+  [run 1.1 16s] chats history 3/3 chats 3/4
+  [run 1.1 23s] chats history 3/3 chats 4/4
+  [run 1.1 23s] summary history 3/3 chats 4/4
+  [run 1.1 52s] done history 3/3 chats 4/4
+  run 1 done: 51.9 s, $0.299, 1 attempt(s)
+nightlight run 2 of 3
+  [run 2.1 0s] parsing history 0/0 chats 0/0
+  [run 2.1 0s] preparing history 0/0 chats 0/0
+  [run 2.1 0s] history history 0/3 chats 0/4
+  [run 2.1 9s] history history 1/3 chats 0/4
+  [run 2.1 10s] history history 2/3 chats 0/4
+  [run 2.1 10s] history history 2/3 chats 1/4
+  [run 2.1 11s] history history 3/3 chats 1/4
+  [run 2.1 11s] chats history 3/3 chats 1/4
+  [run 2.1 13s] chats history 3/3 chats 2/4
+  [run 2.1 13s] chats history 3/3 chats 3/4
+  [run 2.1 14s] chats history 3/3 chats 4/4
+  [run 2.1 14s] summary history 3/3 chats 4/4
+  [run 2.1 44s] done history 3/3 chats 4/4
+  run 2 done: 43.5 s, $0.190, 1 attempt(s)
+nightlight run 3 of 3
+  [run 3.1 0s] parsing history 0/0 chats 0/0
+  [run 3.1 0s] preparing history 0/0 chats 0/0
+  [run 3.1 0s] history history 0/3 chats 0/4
+  [run 3.1 8s] history history 1/3 chats 0/4
+  [run 3.1 9s] history history 2/3 chats 0/4
+  [run 3.1 10s] history history 3/3 chats 0/4
+  [run 3.1 10s] chats history 3/3 chats 0/4
+  [run 3.1 13s] chats history 3/3 chats 1/4
+  [run 3.1 14s] chats history 3/3 chats 2/4
+  [run 3.1 14s] chats history 3/3 chats 3/4
+  [run 3.1 15s] chats history 3/3 chats 4/4
+  [run 3.1 15s] summary history 3/3 chats 4/4
+  [run 3.1 43s] done history 3/3 chats 4/4
+  run 3 done: 42.6 s, $0.196, 1 attempt(s)
+single-chat audits
+  [single-chat] 4/16 ok
+  [single-chat] 5/16 ok
+  [single-chat] 6/16 ok
+  [single-chat] 7/16 ok
+  [single-chat] 8/16 ok
+  [single-chat] 9/16 ok
+  [single-chat] 10/16 ok
+  [single-chat] 11/16 ok
+  [single-chat] 12/16 ok
+  [single-chat] 13/16 ok
+  [single-chat] 14/16 ok
+  [single-chat] 15/16 ok
+  [single-chat] 16/16 ok
+  [single-chat] 16/16 ok
+  [single-chat] 16/16 ok
+  [single-chat] 16/16 ok
+  done: 24.1 s, $0.158, failed: 0
+Bedrock output is saved in eval/out/, but there is no moderation output yet, so nothing was scored and data/eval-results.json was left untouched. Fix OPENAI_API_KEY and run `npm run eval -- --resume`.
+exit 1

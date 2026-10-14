@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "samples": "tsx scripts/make-samples.ts",
     "smoke": "tsx --env-file=.env.local scripts/smoke.ts",
-    "build:demo": "tsx --env-file=.env.local scripts/build-demo-report.ts"
+    "build:demo": "tsx --env-file=.env.local scripts/build-demo-report.ts",
+    "eval": "tsx --env-file=.env --env-file=.env.local scripts/eval.ts"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.34.4",
